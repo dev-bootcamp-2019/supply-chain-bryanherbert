@@ -20,7 +20,7 @@ contract TestSupplyChain {
     Buyer buyer;
     uint skuCount;
     uint price;
-    uint public initialBalance = 10 ether;
+    uint public initialBalance = 20 ether;
 
     function beforeAll(){
         //Setup - needs a constructor or a hook
@@ -28,7 +28,8 @@ contract TestSupplyChain {
         supplyChain = new SupplyChain();
         seller = new Seller();
         buyer = new Buyer();
-        address(buyer).transfer(initialBalance);
+        address(buyer).transfer(10 ether);
+        //address(supplyChain).transfer(2 ether);
     }
     
     function testAddItem() {
@@ -70,33 +71,34 @@ contract TestSupplyChain {
     
     function testBuyItem() {
 
-        //Check account balances before transactions
+        uint state = 1;
+        //Store account balances before transactions
         //Seller
-        Assert.equal(address(seller).balance, 0 ether, "Seller's balance is not 0 ether");
+        uint sellerPreBalance = address(seller).balance;
         //Buyer
-        Assert.equal(address(buyer).balance, 10 ether, "Buyer's balance does not match initial value");
-        /*
+        uint buyerPreBalance = address(buyer).balance;
+
         //Have buyer contract buy item
         buyer.buyItem(supplyChain, skuCount);
-
+        
+        //Store account balances after transactions
+        //Seller
+        uint sellerPostBalance = address(seller).balance;
+        //Buyer
+        uint buyerPostBalance = address(buyer).balance;
+        
         //store return values
-        string memory a;
-        uint b;
         uint c;
         uint d;
-        address e;
         address f;
         
-        (a, b, c, d, e, f) = supplyChain.fetchItem(skuCount);
+        (, , c, d, , f) = supplyChain.fetchItem(skuCount);
 
-        Assert.equal(a, name, "Name of last added item does not match expected value");
-        Assert.equal(b, skuCount, "SKU count of last added item does not match expected value");
-        Assert.equal(c, price, "Price of last added item does not match expected value");
         Assert.equal(d, state, "State of last added item does not match expected value");
-        Assert.equal(e, itemSeller, "Seller of last added item does not match expected value");
-        Assert.equal(f, itemBuyer, "Buyer of last added item is not 0");*/
-
-
+        Assert.equal(f, address(buyer), "Buyer of last added item is not 0");
+        Assert.equal(sellerPostBalance, sellerPreBalance + c, "Seller's balance should increase by price of item");
+        //Why isn't this "isBelow"
+        Assert.equal(buyerPostBalance, buyerPreBalance - c, "Buyer's balance should increase by more than price of item");
     }
     
 
@@ -125,11 +127,15 @@ contract Seller {
         
         return _supplyChain.addItem(_item, _price);
     }
+
+    function() payable {
+
+    }
 }
 
 contract Buyer {
 
-    function buyItem(SupplyChain _supplyChain, uint _sku) public returns(bool){
+    function buyItem(SupplyChain _supplyChain, uint _sku) public {
 
         uint amount = 2 ether;
         
