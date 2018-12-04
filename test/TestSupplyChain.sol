@@ -20,7 +20,7 @@ contract TestSupplyChain {
     Buyer buyer;
     uint skuCount;
     uint price;
-    uint public initialBalance = 20 ether;
+    uint public initialBalance = 10 ether;
 
     function beforeAll(){
         //Setup - needs a constructor or a hook
@@ -29,7 +29,6 @@ contract TestSupplyChain {
         seller = new Seller();
         buyer = new Buyer();
         address(buyer).transfer(10 ether);
-        //address(supplyChain).transfer(2 ether);
     }
     
     function testAddItem() {
@@ -108,6 +107,18 @@ contract TestSupplyChain {
 
     // shipItem
 
+    function testShipItem() {
+        uint state = 2;
+
+        //Have seller ship item
+        seller.shipItem(supplyChain, skuCount);
+
+        uint d;
+        (, , , d, , ) = supplyChain.fetchItem(skuCount);
+
+        Assert.equal(d, state, "State of Item should be Shipped");
+    }
+
     // test for calls that are made by not the seller
     // test for trying to ship an item that is not marked Sold
 
@@ -126,6 +137,11 @@ contract Seller {
     function addItem2supply(SupplyChain _supplyChain, string _item, uint _price) public returns (bool) {
         
         return _supplyChain.addItem(_item, _price);
+    }
+
+    function shipItem(SupplyChain _supplyChain, uint _sku) {
+        
+        _supplyChain.shipItem(_sku);
     }
 
     function() payable {
