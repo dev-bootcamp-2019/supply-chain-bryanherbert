@@ -21,7 +21,6 @@ contract TestSupplyChain {
         string memory name = "tuxedo t-shirt";
         uint price = 5;
         uint skuCount = 0;
-        //change to an enum
         uint state = 0;
         address itemSeller = address(seller);
         address itemBuyer = 0;
@@ -39,12 +38,12 @@ contract TestSupplyChain {
         
         (a, b, c, d, e, f) = supplyChain.fetchItem(skuCount);
 
-        Assert.equal(a, name, "Seller function did not work");
-        Assert.equal(b, skuCount, "Seller function did not work");
-        Assert.equal(c, price, "Seller function did not work");
-        Assert.equal(d, state, "Seller function did not work");
-        Assert.equal(e, itemSeller, "Seller function did not work");
-        Assert.equal(f, itemBuyer, "Seller function did not work");
+        Assert.equal(a, name, "Name of last added item does not match expected value");
+        Assert.equal(b, skuCount, "SKU count of last added item does not match expected value");
+        Assert.equal(c, price, "Price of last added item does not match expected value");
+        Assert.equal(d, state, "State of last added item does not match expected value");
+        Assert.equal(e, itemSeller, "Seller of last added item does not match expected value");
+        Assert.equal(f, itemBuyer, "Buyer of last added item is not 0");
 
 
     }
